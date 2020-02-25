@@ -85,10 +85,10 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="312" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="311" />
     <option name="y" value="50" />
-    <option name="width" value="1454" />
+    <option name="width" value="1455" />
     <option name="height" value="915" />
   </component>
   <component name="ProjectView">
@@ -137,6 +137,7 @@
   <component name="PropertiesComponent">
     <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="Pixel_3_API_29" />
     <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-02-11T19:09:56.901Z" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
