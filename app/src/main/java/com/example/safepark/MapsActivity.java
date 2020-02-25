@@ -39,7 +39,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    protected void onMenuClick(View v){
+    public void onMenuClick(View v){
         Intent i = new Intent(MapsActivity.this, MainActivity.class);
         startActivity(i);
     }
