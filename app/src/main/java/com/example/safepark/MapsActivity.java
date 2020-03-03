@@ -35,9 +35,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
     }
-
 
     public void onMenuClick(View v){
         Intent i = new Intent(MapsActivity.this, MainActivity.class);
