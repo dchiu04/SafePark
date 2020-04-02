@@ -7,36 +7,40 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include
-        layout="@layout/app_bar_main"
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer" />
+        tools:openDrawer="start">
 
-<!--    <Button-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Menu"-->
-<!--        android:onClick="onMenuClick"-->
-<!--        />-->
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            app:headerLayout="@layout/nav_header_main"
+            app:menu="@menu/activity_main_drawer">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MapsActivity"
-        />
+        </com.google.android.material.navigation.NavigationView>
+
+        <include
+            layout="@layout/app_bar_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".MapsActivity" />
+
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+
 
 
 </LinearLayout>
