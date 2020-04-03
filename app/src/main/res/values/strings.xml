@@ -4,7 +4,9 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="park_here">Park Here</string>
     <string name="nav_header_title">SafePark Account</string>
+
     <string name="nav_header_subtitle">John Smith</string>
     <string name="nav_header_desc">Header</string>
     <string name="action_settings">Settings</string>
@@ -15,4 +17,6 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="about">About Us</string>
+
 </resources>

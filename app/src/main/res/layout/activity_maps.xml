@@ -5,42 +5,66 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
+    <!-- CAN POTENTIALLY BE USED TO ADD THE MENU AND SETTINGS Header aligned to top -->
+
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/header"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:background="@color/colorPrimary"-->
+<!--        android:gravity="center" >-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="5dp"-->
+<!--            android:layout_marginTop="5dp"-->
+<!--            android:layout_marginEnd="5dp"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:text="@string/app_name"-->
+<!--            android:textColor="#FFFF"-->
+<!--            android:textSize="20sp" />-->
+<!--    </RelativeLayout>-->
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onMenuClick"
+        android:text="Menu" />
+
+    <Button
+        android:id="@+id/btn1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/park_here" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/edit_text_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter parking time(seconds for testing)" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="sendNotification"
+        android:text="Send parking notification Instantly" />
+
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        tools:openDrawer="start">
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true"
-            app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/activity_main_drawer">
-
-        </com.google.android.material.navigation.NavigationView>
-
-        <include
-            layout="@layout/app_bar_main"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <fragment
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".MapsActivity" />
-
-
-    </androidx.drawerlayout.widget.DrawerLayout>
-
-
-
+        tools:context=".MapsActivity" />
 
 </LinearLayout>

@@ -1,22 +1,21 @@
 package com.example.safepark;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
+import android.app.Notification;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ListView;
-
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,18 +23,19 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
-import java.util.List;
+import static com.example.safepark.App.CHANNEL_1_ID;
+
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
-
+    private NotificationManagerCompat notificationManager;
+    private EditText editTextMessage;
     private GoogleMap mMap;
     private Marker marker;
     private AppBarConfiguration mAppBarConfiguration;
+    private Button bt1;
+    TextView et;
+    public static final String CHANNEL_ID = "channel1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,32 +45,44 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        bt1 = findViewById(R.id.btn1);
+        et = findViewById(R.id.textView);
+        notificationManager = NotificationManagerCompat.from(this);
+        editTextMessage = findViewById(R.id.edit_text_message);
 
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        //FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
-                R.id.nav_tools, R.id.nav_share, R.id.nav_send)
-                .setDrawerLayout(drawer)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+        bt1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                //DEFAULT VALUE WAITS OF 10 SECONDS
+                int time = 11000;
 
+                // Not changing time properly when user enters a time
+                    if (!editTextMessage.getText().toString().equals("")) {
+                        time = Integer.parseInt(editTextMessage.getText().toString());
+
+                        System.out.println("TIME IS:" + time);
+
+                       // editTextMessage.setText(String.valueOf(time));
+                    }
+                    CountDownTimer countDownTimer = new CountDownTimer(time, 1000) {
+                        @Override
+                        public void onTick(long millis) {
+
+                            et.setText("seconds: " + (int)(millis / 1000));
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            et.setText("Finished! Should be getting a phone notification");
+                            sendNotification(v);
+                        }
+                    }.start();
+                }
+
+        });
     }
+
 
     public void onMenuClick(View v){
         Intent i = new Intent(MapsActivity.this, MainActivity.class);
@@ -117,9 +129,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.addMarker(new MarkerOptions().position(point));
             }
         });
-
-
     }
 
+    /**sendNotification
+     * Sends notifications to the user when their timer has ran out.
+     * @param v View the current view - MapsActivity
+      */
+    public void sendNotification(View v) {
 
+        /** https://developer.android.com/training/notify-user/navigation
+         * allows user to go back to the app (should be the popup "parking notification"
+        */
+
+        String title = "SafePark - Your timer has expired";
+        String message = "CHECK ON YOUR CAR OR IT WILL BE TOWED.";
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+                .setSmallIcon(R.drawable.icon_car)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .build();
+
+        notificationManager.notify(1, notification);
+
+    }
 }
