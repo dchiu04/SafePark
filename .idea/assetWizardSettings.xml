@@ -73,6 +73,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
+                                      <entry key="backgroundAssetType" value="COLOR" />
+                                      <entry key="backgroundColor" value="6fff81" />
                                       <entry key="foregroundImage" value="C:\Users\debby\Documents\CPSC\BCIT\Term 3\Comp 3717\SafePark\app\src\main\res\drawable-v24\icon_car.png" />
                                     </map>
                                   </option>
