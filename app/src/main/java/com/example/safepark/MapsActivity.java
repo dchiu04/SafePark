@@ -62,7 +62,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 cancel.setVisibility(v.VISIBLE);
                 int secs = 0;
                 int h = 0;
-                int m = 59;
+                int m = 0;
 
                     if (!hours.getText().toString().equals("")) {
                         h = Integer.parseInt(hours.getText().toString());
@@ -86,11 +86,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         @Override
                         public void onTick(long millis) {
 
-                            // Calculating minutes remaining
-                            if((int) (millis / 60 /1000) < 0) {
-                                mins = (int)(millis / 60 / 1000);
-                            }
-
                             // Resetting seconds and subtracting minutes
                             if (secs == 0 && millis >= 1000) {
                                 secs = 60;
@@ -99,7 +94,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             secs -= 1;
 
                             // User specified hours only
-                            if (hours.getText().toString().equals("") && !hoursSent ) {
+                            if (!hours.getText().toString().equals("") && !hoursSent ) {
                                 mins = 59;
                                 hoursSent = true;
                             }
@@ -119,6 +114,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         public void onFinish() {
                             et.setText("Finished! Should be getting a phone notification");
                             sendNotification(v);
+                            bt1.setVisibility(v.VISIBLE);
+                            cancel.setVisibility(v.GONE);
                         }
                     }.start();
                 }
