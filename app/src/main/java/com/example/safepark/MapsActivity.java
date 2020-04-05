@@ -51,6 +51,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button bt1;
     private Button cancel;
     private String probability;
+    private boolean timer;
     TextView et;
     public static final String CHANNEL_ID = "channel1";
     CountDownTimer countDownTimer;
@@ -80,6 +81,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                timer = true;
                 //Allows user to cancel the timer
                 cancel.setVisibility(v.VISIBLE);
 
@@ -141,6 +143,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onFinish() {
                         et.setText("Your timer has finished. Press cancel to set another parking spot.");
                         sendNotification(v);
+                        timer = false;
                     }
                 }.start();
             }
@@ -256,10 +259,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point) {
-                setMQueue();
-                jsonParse(Double.toString(point.latitude), Double.toString(point.longitude), point);
-                mMap.clear();
-                mMap.setInfoWindowAdapter(new InfoWindowAdapter(MapsActivity.this));
+                if(!timer) {
+                    setMQueue();
+                    jsonParse(Double.toString(point.latitude), Double.toString(point.longitude), point);
+                    mMap.clear();
+                    mMap.setInfoWindowAdapter(new InfoWindowAdapter(MapsActivity.this));
+                }
             }
         });
 
