@@ -16,26 +16,43 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import static com.example.safepark.App.CHANNEL_1_ID;
 
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
     private NotificationManagerCompat notificationManager;
     private EditText minutes;
     private EditText hours;
     private GoogleMap mMap;
+    private RequestQueue mQueue;
     private Marker marker;
     private AppBarConfiguration mAppBarConfiguration;
+    private Button park_here;
     private Button bt1;
     private Button cancel;
+    private Button menu;
+    private Button test;
+    private String probability;
     TextView et;
     public static final String CHANNEL_ID = "channel1";
     CountDownTimer countDownTimer;
@@ -53,7 +70,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         notificationManager = NotificationManagerCompat.from(this);
         minutes = findViewById(R.id.minutes);
         hours = findViewById(R.id.hours);
-
+        park_here = findViewById(R.id.button_id);
+        menu = findViewById(R.id.menu_button);
+        test = findViewById(R.id.test_button);
+        park_here.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(final View v){
+                park_here.setVisibility(View.GONE);
+                displayPopup();
+            }
+        });
 
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,12 +105,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     System.out.println("Passing in total seconds:" + secs);
                     countDownTimer = new CountDownTimer(secs, 1000) {
                         int secs = 60;
-                        int mins = 0;
+                        int mins = 59;
                         int hour = 0;
                         boolean minsSent = false;
                         boolean hoursSent = false;
                         @Override
                         public void onTick(long millis) {
+
+//                            //User set their own minutes and no hours
+//                            if(!minutes.getText().toString().equals("")) {
+//                                mins = Integer.parseInt(minutes.getText().toString());
+//                                mins -= 1;
+//                            }
+
+                            // Calculating minutes remaining
+                            if((int) (millis / 60 /1000) < 0) {
+                                mins = (int)(millis / 60 / 1000);
+                            }
 
                             // Resetting seconds and subtracting minutes
                             if (secs == 0 && millis >= 1000) {
@@ -93,11 +130,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             }
                             secs -= 1;
 
-                            // User specified hours only
-                            if (!hours.getText().toString().equals("") && !hoursSent ) {
-                                mins = 59;
-                                hoursSent = true;
-                            }
+//                            //NEEDS WORK : Resetting hours when mins go down
+//                            if (mins == 0 ) {
+//                                mins = 59;
+//                            }
 
                             // User specified minutes only
                             if (!minutes.getText().toString().equals("") && !minsSent ) {
@@ -105,6 +141,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 mins -= 1;
                                 minsSent = true;
                             }
+
+//                            //both hours and minutes are specified
+//                            if(!hours.getText().toString().equals("") && !hoursSent && !minutes.getText().toString().equals("")) {
+//                                mins = Integer.parseInt(minutes.getText().toString());
+//                                mins -= 1;
+//                                hoursSent = true;
+//                            }
 
                             et.setText("Time Remaining: " + String.format("%02d",(int) (millis / 60 / 60 / 1000) ) +
                                     ":" + String.format("%02d", mins) + ":" + String.format("%02d", secs));
@@ -114,8 +157,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         public void onFinish() {
                             et.setText("Finished! Should be getting a phone notification");
                             sendNotification(v);
-                            bt1.setVisibility(v.VISIBLE);
-                            cancel.setVisibility(v.GONE);
                         }
                     }.start();
                 }
@@ -129,8 +170,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             countDownTimer.cancel();
             countDownTimer = null;
             et.setText("");
-            bt1.setVisibility(v.VISIBLE);
+            et.setVisibility(View.GONE);
+            park_here.setVisibility(View.VISIBLE);
+            bt1.setVisibility(v.GONE);
             cancel.setVisibility(v.GONE);
+            minutes.setVisibility(View.GONE);
+            hours.setVisibility(View.GONE);
+            menu.setVisibility(View.GONE);
+            test.setVisibility(View.GONE);
         }
 
     }
@@ -154,6 +201,62 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 || super.onSupportNavigateUp();
     }
 
+    public void setMQueue(){
+        mQueue = Volley.newRequestQueue(this);
+    }
+
+    public String convertPercentage(String json){
+        String s = json.substring(0,7);
+        Double d = Double.parseDouble(s) * 100;
+        return String.format("%.2f", d);
+    }
+
+    public void makeMarker(LatLng point){
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(point)
+                .title("My Parking Spot")
+                .snippet("There is a " + probability + "% chance of a vehicular crime\noccuring in a 1 mile radius in the next hour")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        marker = mMap.addMarker(markerOptions);
+    }
+
+    public void jsonParse(String lat, String lon, final LatLng point){
+        String url = "https://poisson-distribution-vpd.herokuapp.com/?lon="+lon+"&distance=1&lat="+lat;
+        System.out.println(url);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            probability = convertPercentage(response.getString("probabilityOfACrimeInTheNextHour"));
+                            makeMarker(point);
+
+                            park_here.setVisibility(View.VISIBLE);
+                            System.out.println("Successfully parsed json " + probability);
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError error){
+                error.printStackTrace();
+            }
+        });
+
+        mQueue.add(request);
+    }
+
+    public void displayPopup(){
+        menu.setVisibility(View.VISIBLE);
+        test.setVisibility(View.VISIBLE);
+        minutes.setVisibility(View.VISIBLE);
+        hours.setVisibility(View.VISIBLE);
+        bt1.setVisibility(View.VISIBLE);
+        et.setVisibility(View.VISIBLE);
+
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -169,17 +272,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Add a marker in Vancouver and move the camera
         LatLng vancouver = new LatLng(49.246292, -123.116226);
-        mMap.addMarker(new MarkerOptions().position(vancouver).title("Marker in Vancouver"));
+        mMap.addMarker(new MarkerOptions().position(vancouver).title("Current location "));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(vancouver, 17.0f));
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point) {
+                setMQueue();
+                jsonParse(Double.toString(point.latitude), Double.toString(point.longitude), point);
                 mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(point));
+                mMap.setInfoWindowAdapter(new InfoWindowAdapter(MapsActivity.this));
+            }
+        });
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker m) {
+                if(m.isInfoWindowShown()){
+                    m.hideInfoWindow();
+                    System.out.println("hiding info window");
+                }else{
+                    m.showInfoWindow();
+                    System.out.println("showing info window");
+                }
+                return true;
             }
         });
     }
+
 
     /**sendNotification
      * Sends notifications to the user when their timer has ran out.
