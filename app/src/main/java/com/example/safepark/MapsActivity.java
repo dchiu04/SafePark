@@ -59,29 +59,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(final View v) {
                 //DEFAULT VALUE WAITS OF 10 SECONDS
-                int secs = 11000;
+                int secs = 0;
                 int h = 0;
                 int m = 0;
+
                 // Not changing time properly when user enters a time
                     if (!seconds.getText().toString().equals("")) {
                         secs = Integer.parseInt(seconds.getText().toString());
-
-                        System.out.println("TIME IS:" + secs);
-
-                       // editTextMessage.setText(String.valueOf(time));
                     }
                     if (!hours.getText().toString().equals("")) {
                         h = Integer.parseInt(hours.getText().toString());
-                        h *= 60 * 60;
+                        h *= 60 * 60 * 1000;
                     }
 
                     if (!minutes.getText().toString().equals("")) {
                         m = Integer.parseInt(minutes.getText().toString());
-                        m *= 60;
+                        m *= 60 * 1000;
                     }
 
                     // Calculates the amount of time by adding hours minutes and seconds
                     secs += (h + m);
+                    System.out.println("Passing in total seconds:" + secs);
                     CountDownTimer countDownTimer = new CountDownTimer(secs, 1000) {
                         @Override
                         public void onTick(long millis) {
