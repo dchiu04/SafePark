@@ -3,7 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const url = require('url');
 const GeoPoint = require('geopoint')
- var mysql = require('mysql');
+var mysql = require('mysql');
 
 var con = mysql.createConnection({
   host: "vancouver-vehicular-crimes.c4ztbtstxmqe.us-east-1.rds.amazonaws.com",

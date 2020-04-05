@@ -29,7 +29,9 @@ import static com.example.safepark.App.CHANNEL_1_ID;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private NotificationManagerCompat notificationManager;
-    private EditText editTextMessage;
+    private EditText seconds;
+    private EditText minutes;
+    private EditText hours;
     private GoogleMap mMap;
     private Marker marker;
     private AppBarConfiguration mAppBarConfiguration;
@@ -48,24 +50,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         bt1 = findViewById(R.id.btn1);
         et = findViewById(R.id.textView);
         notificationManager = NotificationManagerCompat.from(this);
-        editTextMessage = findViewById(R.id.edit_text_message);
+        seconds = findViewById(R.id.seconds);
+        minutes = findViewById(R.id.minutes);
+        hours = findViewById(R.id.hours);
 
 
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 //DEFAULT VALUE WAITS OF 10 SECONDS
-                int time = 11000;
-
+                int secs = 11000;
+                int h = 0;
+                int m = 0;
                 // Not changing time properly when user enters a time
-                    if (!editTextMessage.getText().toString().equals("")) {
-                        time = Integer.parseInt(editTextMessage.getText().toString());
+                    if (!seconds.getText().toString().equals("")) {
+                        secs = Integer.parseInt(seconds.getText().toString());
 
-                        System.out.println("TIME IS:" + time);
+                        System.out.println("TIME IS:" + secs);
 
                        // editTextMessage.setText(String.valueOf(time));
                     }
-                    CountDownTimer countDownTimer = new CountDownTimer(time, 1000) {
+                    if (!hours.getText().toString().equals("")) {
+                        h = Integer.parseInt(hours.getText().toString());
+                        h *= 60 * 60;
+                    }
+
+                    if (!minutes.getText().toString().equals("")) {
+                        m = Integer.parseInt(minutes.getText().toString());
+                        m *= 60;
+                    }
+
+                    // Calculates the amount of time by adding hours minutes and seconds
+                    secs += (h + m);
+                    CountDownTimer countDownTimer = new CountDownTimer(secs, 1000) {
                         @Override
                         public void onTick(long millis) {
 
