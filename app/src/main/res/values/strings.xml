@@ -26,6 +26,8 @@
     <string name="and">and</string>
     <string name="time_remaining">Time Remaining:</string>
     <string name="view_map">View Map</string>
+    <string name="notification_title">SafePark - Your timer has expired</string>
+    <string name="notification_message">Check on your car to ensure its safety.</string>
 
 
 </resources>

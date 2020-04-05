@@ -77,23 +77,54 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // Calculates the amount of time by adding hours minutes and seconds
                     secs += (h + m);
                     System.out.println("Passing in total seconds:" + secs);
-                    CountDownTimer countDownTimer = new CountDownTimer(secs, 1000) {
+                    countDownTimer = new CountDownTimer(secs, 1000) {
                         int secs = 60;
                         int mins = 59;
+                        int hour = 0;
+                        boolean minsSent = false;
+                        boolean hoursSent = false;
                         @Override
                         public void onTick(long millis) {
+
+//                            //User set their own minutes and no hours
+//                            if(!minutes.getText().toString().equals("")) {
+//                                mins = Integer.parseInt(minutes.getText().toString());
+//                                mins -= 1;
+//                            }
+
+                            // Calculating minutes remaining
                             if((int) (millis / 60 /1000) < 0) {
                                 mins = (int)(millis / 60 / 1000);
                             }
-                            if (secs == 0) {
+
+                            // Resetting seconds and subtracting minutes
+                            if (secs == 0 && millis >= 1000) {
                                 secs = 60;
                                 mins -= 1;
                             }
                             secs -= 1;
 
-                            //Hours seem to work fine, minutes is counting the entire thing in minutes, seconds is entire time summed up
-                            et.setText("Hours: " + (int) (millis / 60 / 60 / 1000) +
-                                    " Minutes:" + mins + " seconds: " + secs);
+//                            //NEEDS WORK : Resetting hours when mins go down
+//                            if (mins == 0 ) {
+//                                mins = 59;
+//                            }
+
+                            // User specified minutes only
+                            if (!minutes.getText().toString().equals("") && !minsSent ) {
+                                mins = Integer.parseInt(minutes.getText().toString());
+                                mins -= 1;
+                                minsSent = true;
+                            }
+
+//                            //both hours and minutes are specified
+//                            if(!hours.getText().toString().equals("") && !hoursSent && !minutes.getText().toString().equals("")) {
+//                                mins = Integer.parseInt(minutes.getText().toString());
+//                                mins -= 1;
+//                                hoursSent = true;
+//                            }
+
+                            et.setText("Time Remaining: " + String.format("%02d",(int) (millis / 60 / 60 / 1000) ) +
+                                    ":" + String.format("%02d", mins) + ":" + String.format("%02d", secs));
                         }
 
                         @Override
@@ -107,10 +138,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    // Cancels the count down timer
     public void cancel(View v) {
-        countDownTimer.cancel();
-        bt1.setVisibility(v.VISIBLE);
-        cancel.setVisibility(v.GONE);
+        if(countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+            et.setText("");
+            bt1.setVisibility(v.VISIBLE);
+            cancel.setVisibility(v.GONE);
+        }
 
     }
     public void onMenuClick(View v){
@@ -171,7 +207,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         */
 
         String title = "SafePark - Your timer has expired";
-        String message = "CHECK ON YOUR CAR OR IT WILL BE TOWED.";
+        String message = "Check on your car to ensure its safety.";
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.icon_car)
                 .setContentTitle(title)
