@@ -62,7 +62,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 cancel.setVisibility(v.VISIBLE);
                 int secs = 0;
                 int h = 0;
-                int m = 0;
+                int m = 59;
 
                     if (!hours.getText().toString().equals("")) {
                         h = Integer.parseInt(hours.getText().toString());
@@ -79,18 +79,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     System.out.println("Passing in total seconds:" + secs);
                     countDownTimer = new CountDownTimer(secs, 1000) {
                         int secs = 60;
-                        int mins = 59;
+                        int mins = 0;
                         int hour = 0;
                         boolean minsSent = false;
                         boolean hoursSent = false;
                         @Override
                         public void onTick(long millis) {
-
-//                            //User set their own minutes and no hours
-//                            if(!minutes.getText().toString().equals("")) {
-//                                mins = Integer.parseInt(minutes.getText().toString());
-//                                mins -= 1;
-//                            }
 
                             // Calculating minutes remaining
                             if((int) (millis / 60 /1000) < 0) {
@@ -104,10 +98,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             }
                             secs -= 1;
 
-//                            //NEEDS WORK : Resetting hours when mins go down
-//                            if (mins == 0 ) {
-//                                mins = 59;
-//                            }
+                            // User specified hours only
+                            if (hours.getText().toString().equals("") && !hoursSent ) {
+                                mins = 59;
+                                hoursSent = true;
+                            }
 
                             // User specified minutes only
                             if (!minutes.getText().toString().equals("") && !minsSent ) {
@@ -115,13 +110,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 mins -= 1;
                                 minsSent = true;
                             }
-
-//                            //both hours and minutes are specified
-//                            if(!hours.getText().toString().equals("") && !hoursSent && !minutes.getText().toString().equals("")) {
-//                                mins = Integer.parseInt(minutes.getText().toString());
-//                                mins -= 1;
-//                                hoursSent = true;
-//                            }
 
                             et.setText("Time Remaining: " + String.format("%02d",(int) (millis / 60 / 60 / 1000) ) +
                                     ":" + String.format("%02d", mins) + ":" + String.format("%02d", secs));
