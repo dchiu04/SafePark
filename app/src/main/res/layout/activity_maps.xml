@@ -60,19 +60,20 @@
         android:layout_height="wrap_content"
         android:hint="Enter minutes" />
 
-    <EditText
-        android:id="@+id/seconds"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter seconds"
-        android:inputType="text" />
-
 
     <Button
         android:id="@+id/btn1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/park_here" />
+
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="cancel"
+        android:visibility="invisible"
+        android:text="@android:string/cancel" />
 
     <fragment
         android:id="@+id/map"

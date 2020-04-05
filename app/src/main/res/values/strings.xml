@@ -4,7 +4,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="park_here">Park Here</string>
     <string name="nav_header_title">SafePark Account</string>
 
     <string name="nav_header_subtitle">John Smith</string>
@@ -18,5 +17,15 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
     <string name="about">About Us</string>
+
+    <!--POP UP STRINGS GO HERE-->
+    <string name="parking_info">Parking Information</string>
+    <string name="park_here">Park Here</string>
+    <string name="read_more">Read More</string>
+    <string name="location">You have parked at: </string>
+    <string name="and">and</string>
+    <string name="time_remaining">Time Remaining:</string>
+    <string name="view_map">View Map</string>
+
 
 </resources>

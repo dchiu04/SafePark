@@ -29,16 +29,16 @@ import static com.example.safepark.App.CHANNEL_1_ID;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private NotificationManagerCompat notificationManager;
-    private EditText seconds;
     private EditText minutes;
     private EditText hours;
     private GoogleMap mMap;
     private Marker marker;
     private AppBarConfiguration mAppBarConfiguration;
     private Button bt1;
+    private Button cancel;
     TextView et;
     public static final String CHANNEL_ID = "channel1";
-
+    CountDownTimer countDownTimer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +48,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         bt1 = findViewById(R.id.btn1);
+        cancel = findViewById(R.id.cancel);
         et = findViewById(R.id.textView);
         notificationManager = NotificationManagerCompat.from(this);
-        seconds = findViewById(R.id.seconds);
         minutes = findViewById(R.id.minutes);
         hours = findViewById(R.id.hours);
 
@@ -58,15 +58,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                //DEFAULT VALUE WAITS OF 10 SECONDS
+                bt1.setVisibility(v.GONE);
+                cancel.setVisibility(v.VISIBLE);
                 int secs = 0;
                 int h = 0;
                 int m = 0;
 
-                // Not changing time properly when user enters a time
-                    if (!seconds.getText().toString().equals("")) {
-                        secs = Integer.parseInt(seconds.getText().toString());
-                    }
                     if (!hours.getText().toString().equals("")) {
                         h = Integer.parseInt(hours.getText().toString());
                         h *= 60 * 60 * 1000;
@@ -81,10 +78,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     secs += (h + m);
                     System.out.println("Passing in total seconds:" + secs);
                     CountDownTimer countDownTimer = new CountDownTimer(secs, 1000) {
+                        int secs = 60;
+                        int mins = 59;
                         @Override
                         public void onTick(long millis) {
+                            if((int) (millis / 60 /1000) < 0) {
+                                mins = (int)(millis / 60 / 1000);
+                            }
+                            if (secs == 0) {
+                                secs = 60;
+                                mins -= 1;
+                            }
+                            secs -= 1;
 
-                            et.setText("seconds: " + (int)(millis / 1000));
+                            //Hours seem to work fine, minutes is counting the entire thing in minutes, seconds is entire time summed up
+                            et.setText("Hours: " + (int) (millis / 60 / 60 / 1000) +
+                                    " Minutes:" + mins + " seconds: " + secs);
                         }
 
                         @Override
@@ -98,7 +107,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    public void cancel(View v) {
+        countDownTimer.cancel();
+        bt1.setVisibility(v.VISIBLE);
+        cancel.setVisibility(v.GONE);
 
+    }
     public void onMenuClick(View v){
         Intent i = new Intent(MapsActivity.this, MainActivity.class);
         startActivity(i);
