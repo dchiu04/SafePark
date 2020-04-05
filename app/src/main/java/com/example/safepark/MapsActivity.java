@@ -50,8 +50,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button park_here;
     private Button bt1;
     private Button cancel;
-    private Button menu;
-    private Button test;
     private String probability;
     TextView et;
     public static final String CHANNEL_ID = "channel1";
@@ -71,8 +69,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         minutes = findViewById(R.id.minutes);
         hours = findViewById(R.id.hours);
         park_here = findViewById(R.id.button_id);
-        menu = findViewById(R.id.menu_button);
-        test = findViewById(R.id.test_button);
         park_here.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(final View v){
@@ -84,82 +80,70 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                bt1.setVisibility(v.GONE);
+                //Allows user to cancel the timer
                 cancel.setVisibility(v.VISIBLE);
+
+                //Removes buttons/textfields for better user experience
+                bt1.setVisibility(v.GONE);
+                hours.setVisibility(v.GONE);
+                minutes.setVisibility(v.GONE);
+
                 int secs = 0;
                 int h = 0;
                 int m = 0;
 
-                    if (!hours.getText().toString().equals("")) {
-                        h = Integer.parseInt(hours.getText().toString());
-                        h *= 60 * 60 * 1000;
-                    }
-
-                    if (!minutes.getText().toString().equals("")) {
-                        m = Integer.parseInt(minutes.getText().toString());
-                        m *= 60 * 1000;
-                    }
-
-                    // Calculates the amount of time by adding hours minutes and seconds
-                    secs += (h + m);
-                    System.out.println("Passing in total seconds:" + secs);
-                    countDownTimer = new CountDownTimer(secs, 1000) {
-                        int secs = 60;
-                        int mins = 59;
-                        int hour = 0;
-                        boolean minsSent = false;
-                        boolean hoursSent = false;
-                        @Override
-                        public void onTick(long millis) {
-
-//                            //User set their own minutes and no hours
-//                            if(!minutes.getText().toString().equals("")) {
-//                                mins = Integer.parseInt(minutes.getText().toString());
-//                                mins -= 1;
-//                            }
-
-                            // Calculating minutes remaining
-                            if((int) (millis / 60 /1000) < 0) {
-                                mins = (int)(millis / 60 / 1000);
-                            }
-
-                            // Resetting seconds and subtracting minutes
-                            if (secs == 0 && millis >= 1000) {
-                                secs = 60;
-                                mins -= 1;
-                            }
-                            secs -= 1;
-
-//                            //NEEDS WORK : Resetting hours when mins go down
-//                            if (mins == 0 ) {
-//                                mins = 59;
-//                            }
-
-                            // User specified minutes only
-                            if (!minutes.getText().toString().equals("") && !minsSent ) {
-                                mins = Integer.parseInt(minutes.getText().toString());
-                                mins -= 1;
-                                minsSent = true;
-                            }
-
-//                            //both hours and minutes are specified
-//                            if(!hours.getText().toString().equals("") && !hoursSent && !minutes.getText().toString().equals("")) {
-//                                mins = Integer.parseInt(minutes.getText().toString());
-//                                mins -= 1;
-//                                hoursSent = true;
-//                            }
-
-                            et.setText("Time Remaining: " + String.format("%02d",(int) (millis / 60 / 60 / 1000) ) +
-                                    ":" + String.format("%02d", mins) + ":" + String.format("%02d", secs));
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            et.setText("Finished! Should be getting a phone notification");
-                            sendNotification(v);
-                        }
-                    }.start();
+                if (!hours.getText().toString().equals("")) {
+                    h = Integer.parseInt(hours.getText().toString());
+                    h *= 60 * 60 * 1000;
                 }
+
+                if (!minutes.getText().toString().equals("")) {
+                    m = Integer.parseInt(minutes.getText().toString());
+                    m *= 60 * 1000;
+                }
+
+                // Calculates the amount of time by adding hours minutes and seconds
+                secs += (h + m);
+
+                countDownTimer = new CountDownTimer(secs, 1000) {
+                    int secs = 60;
+                    int mins = 59;
+                    int hour = 0;
+                    boolean minsSent = false;
+                    boolean hoursSent = false;
+                    @Override
+                    public void onTick(long millis) {
+
+                        // Calculating minutes remaining
+                        if((int) (millis / 60 /1000) < 0) {
+                            mins = (int)(millis / 60 / 1000);
+                        }
+
+                        // Resetting seconds and subtracting minutes
+                        if (secs == 0 && millis >= 1000) {
+                            secs = 60;
+                            mins -= 1;
+                        }
+                        secs -= 1;
+
+                        // User specified minutes only
+                        if (!minutes.getText().toString().equals("") && !minsSent ) {
+                            mins = Integer.parseInt(minutes.getText().toString());
+                            mins -= 1;
+                            minsSent = true;
+                        }
+
+                        et.setText("Time Remaining: " + String.format("%02d",(int) (millis / 60 / 60 / 1000) ) +
+                                ":" + String.format("%02d", mins) + ":" + String.format("%02d", secs));
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        et.setText("Your timer has finished. Press cancel to set another parking spot.");
+                        sendNotification(v);
+                    }
+                }.start();
+            }
 
         });
     }
@@ -170,14 +154,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             countDownTimer.cancel();
             countDownTimer = null;
             et.setText("");
-            et.setVisibility(View.GONE);
-            park_here.setVisibility(View.VISIBLE);
+            et.setVisibility(v.GONE);
+            park_here.setVisibility(v.VISIBLE);
             bt1.setVisibility(v.GONE);
             cancel.setVisibility(v.GONE);
-            minutes.setVisibility(View.GONE);
-            hours.setVisibility(View.GONE);
-            menu.setVisibility(View.GONE);
-            test.setVisibility(View.GONE);
         }
 
     }
@@ -248,8 +228,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void displayPopup(){
-        menu.setVisibility(View.VISIBLE);
-        test.setVisibility(View.VISIBLE);
         minutes.setVisibility(View.VISIBLE);
         hours.setVisibility(View.VISIBLE);
         bt1.setVisibility(View.VISIBLE);
