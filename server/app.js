@@ -45,9 +45,9 @@ app.get('/', (req, res) => {
                 response = {'count': result.length,
                             'crimesPerHour': crimesPerHour,
                             'probabilityOfACrimeInTheNextHour': crimesPerHour * Math.exp(-1.0 * crimesPerHour),
-                            'queries': result}
+                            }
+                console.log(response)
                 res.send(response)
-                console.log(response);
             });
 });
 
