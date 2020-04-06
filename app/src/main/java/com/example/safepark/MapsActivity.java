@@ -3,20 +3,14 @@ package com.example.safepark;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import android.app.Notification;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -31,14 +25,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import java.util.Locale;
 import static com.example.safepark.App.CHANNEL_1_ID;
 
-
+/**MapsActivity
+ * Main screen that allows the user to pick a point on the map in Vancouver to
+ * set a timer for parking.
+ */
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
     private NotificationManagerCompat notificationManager;
     private EditText minutes;
@@ -55,14 +50,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     TextView et;
     public static final String CHANNEL_ID = "channel1";
     CountDownTimer countDownTimer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         bt1 = findViewById(R.id.btn1);
         cancel = findViewById(R.id.cancel);
         et = findViewById(R.id.textView);
@@ -70,6 +68,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         minutes = findViewById(R.id.minutes);
         hours = findViewById(R.id.hours);
         park_here = findViewById(R.id.button_id);
+
+        //Park button that displays the edit texts
         park_here.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(final View v){
@@ -78,19 +78,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        // Park here button that starts the timer
         bt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 timer = true;
-                //Allows user to cancel the timer
+
+                //Allows user to cancel the timer once timer has been started
                 cancel.setVisibility(v.VISIBLE);
 
-                //Removes buttons/textfields for better user experience
+                //Removes buttons/text fields for better user experience
                 bt1.setVisibility(v.GONE);
                 hours.setVisibility(v.GONE);
                 minutes.setVisibility(v.GONE);
 
-                int secs = 0;
+                int totalSecs = 0;
                 int h = 0;
                 int m = 0;
 
@@ -105,22 +107,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 // Calculates the amount of time by adding hours minutes and seconds
-                secs += (h + m);
+                totalSecs += (h + m);
 
-                countDownTimer = new CountDownTimer(secs, 1000) {
+                countDownTimer = new CountDownTimer(totalSecs, 1000) {
                     int secs = 60;
                     int mins = 59;
-                    int hour = 0;
                     boolean minsSent = false;
-                    boolean hoursSent = false;
+
+                    /**onTick
+                     * Method is called every countDownInterval(1000 milliseconds or 1 second)
+                     * @param millis long which is taken from totalSecs
+                     */
                     @Override
                     public void onTick(long millis) {
-
-                        // Calculating minutes remaining
-                        if((int) (millis / 60 /1000) < 0) {
-                            mins = (int)(millis / 60 / 1000);
-                        }
-
                         // Resetting seconds and subtracting minutes
                         if (secs == 0 && millis >= 1000) {
                             secs = 60;
@@ -135,77 +134,90 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             minsSent = true;
                         }
 
-                        et.setText("Time Remaining: " + String.format("%02d",(int) (millis / 60 / 60 / 1000) ) +
-                                ":" + String.format("%02d", mins) + ":" + String.format("%02d", secs));
+                        String strHrs = String.format(Locale.getDefault(),"%02d",(int) (millis / 60 / 60 / 1000)) + ":";
+                        String strMins = String.format(Locale.getDefault(),"%02d", mins) + ":";
+                        String strSecs = String.format(Locale.getDefault(),"%02d", secs);
+                        String tr = getResources().getString(R.string.time_remaining);
+                        String text = tr + strHrs + strMins + strSecs;
+                        et.setText(text);
                     }
 
                     @Override
                     public void onFinish() {
-                        et.setText("Your timer has finished. Press cancel to set another parking spot.");
+                        String tr = getResources().getString(R.string.finished);
+                        et.setText(tr);
                         sendNotification(v);
                         timer = false;
                     }
                 }.start();
             }
-
         });
     }
 
-    // Cancels the count down timer
+    /**cancel
+     * Cancels the CountDownTimer and shows/hides the necessary elements
+     * @param v View that it is currently on
+     */
     public void cancel(View v) {
+        // Cancels the timer
         if(countDownTimer != null) {
             countDownTimer.cancel();
             countDownTimer = null;
             et.setText("");
+
             et.setVisibility(v.GONE);
             park_here.setVisibility(v.VISIBLE);
             bt1.setVisibility(v.GONE);
             cancel.setVisibility(v.GONE);
+
+            //Allows the user to re-select a new location to park
+            timer = false;
         }
-
-    }
-    public void onMenuClick(View v){
-        Intent i = new Intent(MapsActivity.this, MainActivity.class);
-        startActivity(i);
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
-
+    /**setMQueue
+     * Creates a new volley request queue.
+     */
     public void setMQueue(){
         mQueue = Volley.newRequestQueue(this);
     }
 
+    /**convertPercentage
+     * Converts the json string into a string with maximum 2 decimal places.
+     * @param json String the number to be converted
+     * @return String formatted to maximum 2 decimal places
+     */
     public String convertPercentage(String json){
         String s = json.substring(0,7);
         Double d = Double.parseDouble(s) * 100;
-        return String.format("%.2f", d);
+        return String.format(Locale.getDefault(),"%.2f", d);
     }
 
+    /**makeMarker
+     * Creates a blue marker signifying the user has moved it around to be selected for parking.
+     * @param point LatLng the location of the marker to be selected
+     */
     public void makeMarker(LatLng point){
+        String parkingSpot = getResources().getString(R.string.parking_spot);
+        String infoStart = getResources().getString(R.string.info_start);
+        String chance = getResources().getString(R.string.chance);
+        String text = infoStart + probability + chance ;
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(point)
-                .title("My Parking Spot")
-                .snippet("There is a " + probability + "% chance of a vehicular crime\noccuring in a 1 mile radius in the next hour")
+                .title(parkingSpot)
+                .snippet(text)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
         marker = mMap.addMarker(markerOptions);
     }
 
+    /**jsonParse
+     * Parses the data from the given URL and adds the request to a queue.
+     * @param lat String the latitude of the marker for the URL
+     * @param lon String the longitude of the marker for the URL
+     * @param point LatLng object that contains both the latitude and longitude to create a marker with
+     */
     public void jsonParse(String lat, String lon, final LatLng point){
         String url = "https://poisson-distribution-vpd.herokuapp.com/?lon="+lon+"&distance=1&lat="+lat;
-        System.out.println(url);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>(){
                     @Override
@@ -213,9 +225,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         try {
                             probability = convertPercentage(response.getString("probabilityOfACrimeInTheNextHour"));
                             makeMarker(point);
-
                             park_here.setVisibility(View.VISIBLE);
-                            System.out.println("Successfully parsed json " + probability);
                         } catch (JSONException e){
                             e.printStackTrace();
                         }
@@ -226,19 +236,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 error.printStackTrace();
             }
         });
-
         mQueue.add(request);
     }
 
+    /**displayPopup
+     * Changes visibility of the edit texts and text views for the user to
+     * enter a period of time to start the timer.
+     */
     public void displayPopup(){
         minutes.setVisibility(View.VISIBLE);
         hours.setVisibility(View.VISIBLE);
         bt1.setVisibility(View.VISIBLE);
         et.setVisibility(View.VISIBLE);
-
     }
 
-    /**
+    /**onMapReady
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
@@ -246,6 +258,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
+     * @param googleMap GoogleMap the map that the app loads
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -283,19 +296,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-
     /**sendNotification
      * Sends notifications to the user when their timer has ran out.
      * @param v View the current view - MapsActivity
-      */
+     */
     public void sendNotification(View v) {
-
-        /** https://developer.android.com/training/notify-user/navigation
-         * allows user to go back to the app (should be the popup "parking notification"
-        */
-
-        String title = "SafePark - Your timer has expired";
-        String message = "Check on your car to ensure its safety.";
+        String title = getResources().getString(R.string.notification_title);
+        String message = getResources().getString(R.string.notification_message);
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.icon_car)
                 .setContentTitle(title)
@@ -303,8 +310,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();
-
         notificationManager.notify(1, notification);
-
     }
 }

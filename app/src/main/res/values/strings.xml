@@ -22,18 +22,18 @@
     <string name="menu_send">Send</string>
     <string name="about">About Us</string>
 
-    <string name="info_title">My Parking Spot</string>
-    <!--POP UP STRINGS GO HERE-->
+    <string name="parking_spot">My Parking Spot</string>
+    <string name="info_start">There is a\u0020</string>
+    <string name="chance"> % chance of a vehicular crime \noccurring in a 1 mile radius in the next hour.</string>
     <string name="parking_info">Parking Information</string>
     <string name="read_more">Read More</string>
     <string name="location">You have parked at: </string>
     <string name="and">and</string>
-    <string name="time_remaining">Time Remaining:</string>
+    <string name="time_remaining">Time Remaining:\u0020</string>
     <string name="view_map">View Map</string>
     <string name="notification_title">SafePark - Your timer has expired</string>
     <string name="notification_message">Check on your car to ensure its safety.</string>
+    <string name="finished">Your timer has finished. Press cancel to set another parking spot.</string>
     <string name="enter_hours">Enter Hours</string>
     <string name="enter_minutes">Enter Minutes</string>
-
-
 </resources>

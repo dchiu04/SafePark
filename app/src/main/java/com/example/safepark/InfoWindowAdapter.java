@@ -3,12 +3,13 @@ package com.example.safepark;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
+/**InfoWindowAdapter
+ * Custom window info that appears when you click on a marker.
+ */
 public class InfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
 
     private final View mWindow;
@@ -19,6 +20,11 @@ public class InfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
         mWindow = LayoutInflater.from(context).inflate(R.layout.custom_info_window, null);
     }
 
+    /**renderWindowText
+     * Displays the information about the crime in the area.
+     * @param marker Marker on the map
+     * @param view View the app is currently on
+     */
     private void renderWindowText(Marker marker, View view){
         String title = marker.getTitle();
         TextView tvTitle = (TextView) view.findViewById(R.id.title);
@@ -33,10 +39,7 @@ public class InfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
         if(!snippet.equals("")){
             tvSnippet.setText(snippet);
         }
-
-
     }
-
 
     @Override
     public View getInfoWindow(Marker marker) {

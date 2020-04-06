@@ -5,9 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-
     xmlns:android="http://schemas.android.com/apk/res/android">
-
 
     <TextView
         android:id="@+id/textView"
@@ -33,7 +31,6 @@
         android:hint="@string/enter_minutes"
         android:visibility="gone"/>
 
-
     <Button
         android:id="@+id/btn1"
         android:layout_width="match_parent"
@@ -48,7 +45,6 @@
         android:onClick="cancel"
         android:visibility="gone"
         android:text="@android:string/cancel" />
-    <!-- end of pop up -->
 
     <Button
         android:id="@+id/button_id"
@@ -63,5 +59,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MapsActivity" />
-
 </LinearLayout>
